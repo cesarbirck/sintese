@@ -1,0 +1,629 @@
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<script>
+		function seleciona(t){			
+			var x = document.getElementsByName(t.name);
+			var i;
+			for (i = 0; i < x.length; i++) {                		
+				x[i].className ="nSelecionado";						  
+			}
+			
+			var y = document.getElementsByName('td'+t.name);
+			for (i = 0; i < y.length; i++) { 				
+				y[i].className ="tdnSelOpac";						  
+			}
+			
+			
+			t.className ="selecionado";		
+			document.getElementById('td'+t.id).className ="tdSel";
+			
+			var img = document.createElement("img");
+			img.src = t.src;
+			img.title=t.title;
+			img.className ="selecionado";
+			img.id=t.name+'item';
+			img.name="item";
+			var src = document.getElementById(t.name+"chose");
+			var last;
+			while (last = src.lastChild) src.removeChild(last);
+				src.appendChild(img);
+			
+			if (document.getElementsByName('item').length==12){	
+				calcula();	
+			}
+			return;
+		}
+		function calcula(){
+			
+			var fogo=0;
+			var terra=0;
+			var ar=0;
+			var agua=0;
+			var cardinal=0;
+			var fixo=0;
+			var mutavel=0;		
+			var y = document.getElementsByName('item');			
+			for (i = 0; i < y.length; i++) {				
+				a = getTypeFeature(y[i].title,y[i].id)				
+				fogo+=a[0];
+				terra+=a[1];
+				ar+=a[2];
+				agua+=a[3];
+				cardinal+=a[4];
+				fixo+=a[5];
+				mutavel+=a[6];					
+			}	
+			
+			document.getElementById("fogo").firstChild.data=fogo;
+			document.getElementById("terra").firstChild.data=terra;
+			document.getElementById("ar").firstChild.data=ar;
+			document.getElementById("agua").firstChild.data=agua;
+			document.getElementById("cardinal").firstChild.data=cardinal;
+			document.getElementById("fixo").firstChild.data=fixo;
+			document.getElementById("mutavel").firstChild.data=mutavel;
+			
+			var elem=[];
+			elem[0]=fogo;
+			elem[1]=terra;
+			elem[2]=ar;
+			elem[3]=agua;
+			var trip=[];
+			trip[0]=cardinal;
+			trip[1]=fixo;
+			trip[2]=mutavel;
+			
+			
+			var mais  ="";
+			var menos ="";
+			var mr    =0;
+			var mn	  =elem[0];
+			for (i=0; i<4 ;i++)
+			{				
+				if (mr<elem[i])
+				 mr = elem[i];
+				if (mn>elem[i])
+					mn = elem[i]				
+			}
+			for (var t=0; t<4 ; t++)
+			{
+				if (elem[t]==mr){
+					if (t==0){
+						mais+=";fo";
+					}
+					else if (t==1){
+						mais+=";te";
+					}
+					else if (t==2){
+						mais+=";ar";
+					}
+					else if (t==3){
+						mais+=";ag";
+					}
+				}
+				if (elem[t]==mn){
+					if (t==0){
+						menos+=";fo";
+					}
+					else if (t==1){
+						menos+=";te";
+					}
+					else if (t==2){
+						menos+=";ar";
+					}
+					else if (t==3){
+						menos+=";ag";
+					}
+				}					
+			}
+			
+			//cálculo triplicidade
+			var tripmais  = "";
+			var tripmenos = "";
+			var mr    =0;
+			var mn	  =trip[0];
+			for (i=0; i<3 ; i++)
+			{
+				if (mr<trip[i])
+				 mr=trip[i];
+				if (mn>trip[i])
+				 mn=trip[i];
+			}
+			for (t=0; t<3 ; t++)
+			{
+				if (trip[t]==mr){
+					if (t==0){
+						tripmais+=";ca";
+					}
+					else if (t==1){
+						tripmais+=";fi";
+					}
+					else if (t==2){
+						tripmais+=";mu";
+					}					
+				}
+				if (trip[t]==mn){
+					if (t==0){
+						tripmenos+=";ca";
+					}
+					else if (t==1){
+						tripmenos+=";fi";
+					}
+					else if (t==2){
+						tripmenos+=";mu";
+					}
+					
+				}					
+			}
+			
+			var src = document.getElementById("mais");
+			var last;
+			while (last = src.lastChild) src.removeChild(last);
+			var arraymais = mais.split(";")
+			var arraytripmais = tripmais.split(";")
+			
+			for (j=0; j<arraymais.length;j++){				
+				if (arraymais[j]!=""){
+					for (t=0;t<arraytripmais.length;t++){						
+						if (arraytripmais[t]!="")
+						{	
+							it = getTypeElement(getType(arraymais[j],arraytripmais[t]));
+							if (it!=""){
+								var img = document.createElement("img");
+								img.src = it.src;
+								img.title=it.title;
+								img.className ="selecionado";
+								//img.id='mais1';
+								img.name="mais";
+								src.appendChild(img);
+							}
+						}
+					}
+				}
+			}
+			
+			var src = document.getElementById("menos");
+			var last;
+			while (last = src.lastChild) src.removeChild(last);
+			var arraymenos = menos.split(";")
+			var arraytripmenos = tripmenos.split(";")
+			
+			for (var f=0; f<arraymenos.length;f++){				
+				if (arraymenos[f]!=""){
+					for (var o=0;o<arraytripmenos.length;o++){	
+						if (arraytripmenos[o]!="")
+						{	
+							it = getTypeElement(getType(arraymenos[f],arraytripmenos[o]));
+							if (it!=""){
+								var img = document.createElement("img");
+								img.src = it.src;
+								img.title=it.title;
+								img.className ="selecionado";
+								img.name="menos";
+								src.appendChild(img);
+							}
+						}
+					}
+				}
+			}	
+		}
+		
+		function getType(elem,trip){
+			if (elem=="fo"){
+				if (trip=="ca")
+					return "aries";
+				else if (trip=="fi")
+					return "leão";
+				else if (trip=="mu")
+					return "sagitário";
+			}
+			if (elem=="te"){
+				if (trip=="ca")
+					return "capricórnio";
+				else if (trip=="fi")
+					return "touro";
+				else if (trip=="mu")
+					return "virgem";
+			}
+			if (elem=="ar"){
+				if (trip=="ca")
+					return "libra";
+				else if (trip=="fi")
+					return "aquário";
+				else if (trip=="mu")
+					return "gêmeos";
+			}
+			if (elem=="ag"){
+				if (trip=="ca")
+					return "câncer";
+				else if (trip=="fi")
+					return "escorpião";
+				else if (trip=="mu")
+					return "peixes";
+			}
+		}
+	
+		function getTypeElement(type){
+			var y = document.getElementsByName('asc');			
+			for (i = 0; i < y.length; i++) {
+				if (y[i].title==type)
+				 return y[i]
+			}
+			return "";
+		}
+		
+		function getTypeFeature(type,astro){
+			var peso = 3;
+			if (['mercitem', 'venitem', 'martitem'].indexOf(astro)>=0)
+			{
+				peso = 2;
+			}
+			else if (['martitem','jupitem', 'satitem','uraitem', 'netitem','pluitem'].indexOf(astro)>=0)
+			{
+				peso = 1;
+			}			
+			
+			/*
+			 a[0] = "Fogo"
+			 a[1] = "Terra"
+			 a[2] = "Ar"
+			 a[3] = "Agua"
+			 a[4] = "Cardinal"
+			 a[5] = "Fixo"
+			 a[6] = "Mutável"
+			*/
+			
+			var a=[];
+			for  (var i = 0; i <= 6; i++) 
+			{
+				a[i]=0;
+			}			
+			if (type=="aries")
+			{
+				a[0]=peso;
+				a[4]=peso;
+			}
+			else if (type=="touro")
+			{
+				a[1]=peso;
+				a[5]=peso;
+			}
+			else if (type=="gêmeos")
+			{
+				a[2]=peso;
+				a[6]=peso;			
+			}
+			else if (type=="câncer")
+			{
+				a[3]=peso;
+				a[4]=peso;			
+			}
+			else if (type=="leão")
+			{
+				a[0]=peso;
+				a[5]=peso;
+			}
+			else if (type=="virgem")
+			{
+				a[1]=peso;
+				a[6]=peso;
+			}
+			else if (type=="libra")
+			{
+				a[2]=peso;
+				a[4]=peso;
+			}
+			else if (type=="escorpião")
+			{
+				a[3]=peso;
+				a[5]=peso;
+			}
+			else if (type=="sagitário")
+			{
+				a[0]=peso;
+				a[6]=peso;
+			}
+			else if (type=="capricórnio")
+			{
+				a[1]=peso;
+				a[4]=peso;
+			}
+			else if (type=="aquário")
+			{
+				a[2]=peso;
+				a[5]=peso;
+			}
+			else if (type=="peixes")
+			{
+				a[3]=peso;
+				a[6]=peso;
+			}
+			return a;
+		}
+	</script>
+	<style type="text/css">
+		.nSelecionado {
+			width: 25px;
+			height: 25px;
+		}		
+		.selecionado {			
+			width: 28px;
+			height: 28px;			
+			align-items: center;
+		}
+		.tdnSel{
+			background-color: #FFFFFF;
+		}
+		.tdnSelOpac{
+			background-color: #FFFFFF;
+			opacity:0.2;
+		}
+		.tdSel{
+			background-color: #ffd78c;
+			opacity:1;
+			align-items: center;
+		}
+		.cab{
+		background-color: #ffd78c;
+		width: 40px;
+			height: 40px;
+		}
+		.imgcab{
+			width: 40px;
+			height: 40px;
+		}
+		.divpai{
+			position: relative;
+			float: left;			
+		}
+		.title{
+			/*background-color: lightgreen;*/
+			color: blue;
+			font-weight: bold;			
+		}
+		.desc{
+			
+			color: green;
+			font-weight: bold;			
+		}
+	</style>
+	<body>
+		<div class="divpai">
+			<table>
+				<tr>
+					<th id="ascchose"></th>
+					<th id="mcchose"></th>
+					<th id="solchose"></th>				
+					<th id="luachose"></th>				
+					<th id="mercchose"></th>
+					<th id="venchose"></th>
+					<th id="martchose"></th>
+					<th id="jupchose"></th>
+					<th id="satchose"></th>
+					<th id="urachose"></th>
+					<th id="netchose"></th>
+					<th id="pluchose"></th>
+				</tr>
+				<tr>
+					<th class="cab" title="ascendente">ASC</th>
+					<th class="cab" title="meio do céu">MC</th>
+					<th class="cab"><img title="sol" class="imgcab" src="https://storage.cloud.google.com/sintese/images/sol.gif?authuser=1" /></th>				
+					<th class="cab"><img title="lua" class="imgcab" src="https://storage.cloud.google.com/sintese/images/lua.gif?authuser=1" /></th>				
+					<th class="cab"><img title="mercúrio" class="imgcab" src="https://storage.cloud.google.com/sintese/images/merc%C3%BArio.gif?authuser=1" /></th>
+					<th class="cab"><img title="vênus" class="imgcab" src="https://storage.cloud.google.com/sintese/images/v%C3%AAnus.gif?authuser=1" /></th>
+					<th class="cab"><img title="marte" class="imgcab" src="https://storage.cloud.google.com/sintese/images/marte.gif?authuser=1" /></th>
+					<th class="cab"><img title="júpter" class="imgcab" src="https://storage.cloud.google.com/sintese/images/j%C3%BApter.gif?authuser=1" /></th>
+					<th class="cab"><img title="saturno" class="imgcab" src="https://storage.cloud.google.com/sintese/images/saturno.gif?authuser=1" /></th>
+					<th class="cab"><img title="urano" class="imgcab" src="https://storage.cloud.google.com/sintese/images/urano.gif?authuser=1" /></th>
+					<th class="cab"><img title="netuno" class="imgcab" src="https://storage.cloud.google.com/sintese/images/netuno.gif?authuser=1" /></th>
+					<th class="cab"><img title="plutão" class="imgcab" src="https://storage.cloud.google.com/sintese/images/plut%C3%A3o.gif?authuser=1" /></th>
+				</tr>
+				<tr height="5px;"><td colspan="12" style="background-color:coral;"></td></tr>
+				<tr>				
+					<td class="tdnSel" name="tdasc"  id="tdasc1"><img id="asc1" name="asc" title="aries" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aries.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmc"  id="tdmc1"><img id="mc1" name="mc" title="aries" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aries.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsol" id="tdsol1"><img id="sol1" name="sol" title="aries" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aries.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdlua"  id="tdlua1"><img id="lua1" name="lua" title="aries" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aries.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmerc"  id="tdmerc1"><img id="merc1" name="merc" title="aries" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aries.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdven"  id="tdven1"><img id="ven1" name="ven" title="aries" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aries.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmart"  id="tdmart1"><img id="mart1" name="mart" title="aries" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aries.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdjup"  id="tdjup1"><img id="jup1" name="jup" title="aries" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aries.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsat"  id="tdsat1"><img id="sat1" name="sat" title="aries" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aries.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdura"  id="tdura1"><img id="ura1" name="ura" title="aries" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aries.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdnet"  id="tdnet1"><img id="net1" name="net" title="aries" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aries.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdplu"  id="tdplu1"><img id="plu1" name="plu" title="aries" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aries.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+				</tr>
+				<tr>				
+					<td class="tdnSel" name="tdasc"  id="tdasc2"><img id="asc2" name="asc" title="touro" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/touro.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmc"  id="tdmc2"><img id="mc2" name="mc" title="touro" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/touro.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsol" id="tdsol2"><img id="sol2" name="sol" title="touro" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/touro.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdlua"  id="tdlua2"><img id="lua2" name="lua" title="touro" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/touro.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmerc"  id="tdmerc2"><img id="merc2" name="merc" title="touro" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/touro.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdven"  id="tdven2"><img id="ven2" name="ven" title="touro" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/touro.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmart"  id="tdmart2"><img id="mart2" name="mart" title="touro" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/touro.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdjup"  id="tdjup2"><img id="jup2" name="jup" title="touro" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/touro.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsat"  id="tdsat2"><img id="sat2" name="sat" title="touro" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/touro.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdura"  id="tdura2"><img id="ura2" name="ura" title="touro" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/touro.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdnet"  id="tdnet2"><img id="net2" name="net" title="touro" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/touro.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdplu"  id="tdplu2"><img id="plu2" name="plu" title="touro" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/touro.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+				</tr>
+				<tr>				
+					<td class="tdnSel" name="tdasc"  id="tdasc3"><img id="asc3" name="asc" title="gêmeos" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/g%C3%AAmeos.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmc"  id="tdmc3"><img id="mc3" name="mc" title="gêmeos" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/g%C3%AAmeos.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsol" id="tdsol3"><img id="sol3" name="sol" title="gêmeos" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/g%C3%AAmeos.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdlua"  id="tdlua3"><img id="lua3" name="lua" title="gêmeos" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/g%C3%AAmeos.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmerc"  id="tdmerc3"><img id="merc3" name="merc" title="gêmeos" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/g%C3%AAmeos.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdven"  id="tdven3"><img id="ven3" name="ven" title="gêmeos" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/g%C3%AAmeos.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmart"  id="tdmart3"><img id="mart3" name="mart" title="gêmeos" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/g%C3%AAmeos.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdjup"  id="tdjup3"><img id="jup3" name="jup" title="gêmeos" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/g%C3%AAmeos.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsat"  id="tdsat3"><img id="sat3" name="sat" title="gêmeos" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/g%C3%AAmeos.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdura"  id="tdura3"><img id="ura3" name="ura" title="gêmeos" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/g%C3%AAmeos.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdnet"  id="tdnet3"><img id="net3" name="net" title="gêmeos" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/g%C3%AAmeos.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdplu"  id="tdplu3"><img id="plu3" name="plu" title="gêmeos" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/g%C3%AAmeos.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+				</tr>
+				<tr>				
+					<td class="tdnSel" name="tdasc"  id="tdasc4"><img id="asc4" name="asc" title="câncer" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/c%C3%A2ncer.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmc"  id="tdmc4"><img id="mc4" name="mc" title="câncer" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/c%C3%A2ncer.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsol" id="tdsol4"><img id="sol4" name="sol" title="câncer" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/c%C3%A2ncer.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdlua"  id="tdlua4"><img id="lua4" name="lua" title="câncer" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/c%C3%A2ncer.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmerc"  id="tdmerc4"><img id="merc4" name="merc" title="câncer" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/c%C3%A2ncer.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdven"  id="tdven4"><img id="ven4" name="ven" title="câncer" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/c%C3%A2ncer.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmart"  id="tdmart4"><img id="mart4" name="mart" title="câncer" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/c%C3%A2ncer.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdjup"  id="tdjup4"><img id="jup4" name="jup" title="câncer" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/c%C3%A2ncer.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsat"  id="tdsat4"><img id="sat4" name="sat" title="câncer" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/c%C3%A2ncer.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdura"  id="tdura4"><img id="ura4" name="ura" title="câncer" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/c%C3%A2ncer.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdnet"  id="tdnet4"><img id="net4" name="net" title="câncer" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/c%C3%A2ncer.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdplu"  id="tdplu4"><img id="plu4" name="plu" title="câncer" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/c%C3%A2ncer.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+				</tr>
+				<tr>				
+					<td class="tdnSel" name="tdasc"  id="tdasc5"><img id="asc5" name="asc" title="leão" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/le%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmc"  id="tdmc5"><img id="mc5" name="mc" title="leão" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/le%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsol" id="tdsol5"><img id="sol5" name="sol" title="leão" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/le%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdlua"  id="tdlua5"><img id="lua5" name="lua" title="leão" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/le%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmerc"  id="tdmerc5"><img id="merc5" name="merc" title="leão" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/le%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdven"  id="tdven5"><img id="ven5" name="ven" title="leão" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/le%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmart"  id="tdmart5"><img id="mart5" name="mart" title="leão" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/le%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdjup"  id="tdjup5"><img id="jup5" name="jup" title="leão" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/le%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsat"  id="tdsat5"><img id="sat5" name="sat" title="leão" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/le%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdura"  id="tdura5"><img id="ura5" name="ura" title="leão" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/le%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdnet"  id="tdnet5"><img id="net5" name="net" title="leão" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/le%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdplu"  id="tdplu5"><img id="plu5" name="plu" title="leão" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/le%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+				</tr>
+				<tr>				
+					<td class="tdnSel" name="tdasc"  id="tdasc6"><img id="asc6" name="asc" title="virgem" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/virgem.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmc"  id="tdmc6"><img id="mc6" name="mc" title="virgem" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/virgem.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsol" id="tdsol6"><img id="sol6" name="sol" title="virgem" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/virgem.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdlua"  id="tdlua6"><img id="lua6" name="lua" title="virgem" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/virgem.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmerc"  id="tdmerc6"><img id="merc6" name="merc" title="virgem" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/virgem.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdven"  id="tdven6"><img id="ven6" name="ven" title="virgem" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/virgem.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmart"  id="tdmart6"><img id="mart6" name="mart" title="virgem" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/virgem.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdjup"  id="tdjup6"><img id="jup6" name="jup" title="virgem" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/virgem.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsat"  id="tdsat6"><img id="sat6" name="sat" title="virgem" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/virgem.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdura"  id="tdura6"><img id="ura6" name="ura" title="virgem" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/virgem.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdnet"  id="tdnet6"><img id="net6" name="net" title="virgem" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/virgem.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdplu"  id="tdplu6"><img id="plu6" name="plu" title="virgem" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/virgem.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+				</tr>
+				<tr>				
+					<td class="tdnSel" name="tdasc"  id="tdasc7"><img id="asc7" name="asc" title="libra" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/libra.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmc"  id="tdmc7"><img id="mc7" name="mc" title="libra" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/libra.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsol" id="tdsol7"><img id="sol7" name="sol" title="libra" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/libra.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdlua"  id="tdlua7"><img id="lua7" name="lua" title="libra" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/libra.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmerc"  id="tdmerc7"><img id="merc7" name="merc" title="libra" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/libra.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdven"  id="tdven7"><img id="ven7" name="ven" title="libra" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/libra.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmart"  id="tdmart7"><img id="mart7" name="mart" title="libra" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/libra.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdjup"  id="tdjup7"><img id="jup7" name="jup" title="libra" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/libra.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsat"  id="tdsat7"><img id="sat7" name="sat" title="libra" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/libra.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdura"  id="tdura7"><img id="ura7" name="ura" title="libra" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/libra.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdnet"  id="tdnet7"><img id="net7" name="net" title="libra" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/libra.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdplu"  id="tdplu7"><img id="plu7" name="plu" title="libra" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/libra.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+				</tr>
+				<tr>				
+					<td class="tdnSel" name="tdasc"  id="tdasc8"><img id="asc8" name="asc" title="escorpião" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/escorpi%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmc"  id="tdmc8"><img id="mc8" name="mc" title="escorpião" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/escorpi%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsol" id="tdsol8"><img id="sol8" name="sol" title="escorpião" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/escorpi%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdlua"  id="tdlua8"><img id="lua8" name="lua" title="escorpião" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/escorpi%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmerc"  id="tdmerc8"><img id="merc8" name="merc" title="escorpião" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/escorpi%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdven"  id="tdven8"><img id="ven8" name="ven" title="escorpião" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/escorpi%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmart"  id="tdmart8"><img id="mart8" name="mart" title="escorpião" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/escorpi%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdjup"  id="tdjup8"><img id="jup8" name="jup" title="escorpião" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/escorpi%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsat"  id="tdsat8"><img id="sat8" name="sat" title="escorpião" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/escorpi%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdura"  id="tdura8"><img id="ura8" name="ura" title="escorpião" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/escorpi%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdnet"  id="tdnet8"><img id="net8" name="net" title="escorpião" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/escorpi%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdplu"  id="tdplu8"><img id="plu8" name="plu" title="escorpião" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/escorpi%C3%A3o.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+				</tr>
+				
+				<tr>				
+					<td class="tdnSel" name="tdasc"  id="tdasc9"><img id="asc9" name="asc" title="sagitário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/sagit%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmc"  id="tdmc9"><img id="mc9" name="mc" title="sagitário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/sagit%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsol" id="tdsol9"><img id="sol9" name="sol" title="sagitário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/sagit%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdlua"  id="tdlua9"><img id="lua9" name="lua" title="sagitário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/sagit%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmerc"  id="tdmerc9"><img id="merc9" name="merc" title="sagitário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/sagit%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdven"  id="tdven9"><img id="ven9" name="ven" title="sagitário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/sagit%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmart"  id="tdmart9"><img id="mart9" name="mart" title="sagitário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/sagit%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdjup"  id="tdjup9"><img id="jup9" name="jup" title="sagitário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/sagit%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsat"  id="tdsat9"><img id="sat9" name="sat" title="sagitário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/sagit%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdura"  id="tdura9"><img id="ura9" name="ura" title="sagitário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/sagit%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdnet"  id="tdnet9"><img id="net9" name="net" title="sagitário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/sagit%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdplu"  id="tdplu9"><img id="plu9" name="plu" title="sagitário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/sagit%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+				</tr>
+				<tr>				
+					<td class="tdnSel" name="tdasc"  id="tdasc10"><img id="asc10" name="asc" title="capricórnio" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/capric%C3%B3rnio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmc"  id="tdmc10"><img id="mc10" name="mc" title="capricórnio" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/capric%C3%B3rnio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsol" id="tdsol10"><img id="sol10" name="sol" title="capricórnio" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/capric%C3%B3rnio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdlua"  id="tdlua10"><img id="lua10" name="lua" title="capricórnio" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/capric%C3%B3rnio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmerc"  id="tdmerc10"><img id="merc10" name="merc" title="capricórnio" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/capric%C3%B3rnio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdven"  id="tdven10"><img id="ven10" name="ven" title="capricórnio" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/capric%C3%B3rnio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmart"  id="tdmart10"><img id="mart10" name="mart" title="capricórnio" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/capric%C3%B3rnio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdjup"  id="tdjup10"><img id="jup10" name="jup" title="capricórnio" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/capric%C3%B3rnio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsat"  id="tdsat10"><img id="sat10" name="sat" title="capricórnio" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/capric%C3%B3rnio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdura"  id="tdura10"><img id="ura10" name="ura" title="capricórnio" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/capric%C3%B3rnio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdnet"  id="tdnet10"><img id="net10" name="net" title="capricórnio" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/capric%C3%B3rnio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdplu"  id="tdplu10"><img id="plu10" name="plu" title="capricórnio" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/capric%C3%B3rnio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+				</tr>
+				<tr>				
+					<td class="tdnSel" name="tdasc"  id="tdasc11"><img id="asc11" name="asc" title="aquário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aqu%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmc"  id="tdmc11"><img id="mc11" name="mc" title="aquário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aqu%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsol" id="tdsol11"><img id="sol11" name="sol" title="aquário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aqu%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdlua"  id="tdlua11"><img id="lua11" name="lua" title="aquário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aqu%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmerc"  id="tdmerc11"><img id="merc11" name="merc" title="aquário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aqu%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdven"  id="tdven11"><img id="ven11" name="ven" title="aquário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aqu%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmart"  id="tdmart11"><img id="mart11" name="mart" title="aquário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aqu%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdjup"  id="tdjup11"><img id="jup11" name="jup" title="aquário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aqu%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsat"  id="tdsat11"><img id="sat11" name="sat" title="aquário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aqu%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdura"  id="tdura11"><img id="ura11" name="ura" title="aquário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aqu%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdnet"  id="tdnet11"><img id="net11" name="net" title="aquário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aqu%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdplu"  id="tdplu11"><img id="plu11" name="plu" title="aquário" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/aqu%C3%A1rio.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+				</tr>
+				<tr>				
+					<td class="tdnSel" name="tdasc"  id="tdasc12"><img id="asc12" name="asc" title="peixes" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/peixes.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmc"  id="tdmc12"><img id="mc12" name="mc" title="peixes" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/peixes.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsol" id="tdsol12"><img id="sol12" name="sol" title="peixes" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/peixes.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdlua"  id="tdlua12"><img id="lua12" name="lua" title="peixes" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/peixes.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmerc"  id="tdmerc12"><img id="merc12" name="merc" title="peixes" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/peixes.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdven"  id="tdven12"><img id="ven12" name="ven" title="peixes" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/peixes.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdmart"  id="tdmart12"><img id="mart12" name="mart" title="peixes" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/peixes.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdjup"  id="tdjup12"><img id="jup12" name="jup" title="peixes" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/peixes.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdsat"  id="tdsat12"><img id="sat12" name="sat" title="peixes" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/peixes.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdura"  id="tdura12"><img id="ura12" name="ura" title="peixes" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/peixes.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdnet"  id="tdnet12"><img id="net12" name="net" title="peixes" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/peixes.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+					<td class="tdnSel" name="tdplu"  id="tdplu12"><img id="plu12" name="plu" title="peixes" class="nSelecionado" src="https://storage.cloud.google.com/sintese/images/peixes.gif?authuser=1"   alt="Italian Trulli" onclick="seleciona(this);" /></td>
+				</tr>
+			</table>
+		</div>
+		<div class="divpai" style="padding-left: 30px;padding-top: 70px;">
+			<table>
+				<tr>
+					<td class="title">Fogo</td>
+					<td id="fogo" class="desc">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="title">Terra</td>
+					<td id="terra" class="desc">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="title">Ar</td>
+					<td id="ar" class="desc">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="title">Água</td>
+					<td id="agua" class="desc">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="title">Cardinal</td>
+					<td id="cardinal" class="desc">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="title">Fixo</td>
+					<td id="fixo" class="desc">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="title">Mutável</td>
+					<td id="mutavel" class="desc">&nbsp;</td>
+				</tr>
+			</table>
+		</div>
+		<div class="divpai" style="padding-left: 30px;padding-top: 70px;">
+			<div><strong class="title">Tem mais</strong><div id="mais"></div></div>
+			<div style="padding-top: 15px;"><strong class="title">Tem menos</strong><div id="menos"></div></div>
+		</div>
+	</body>
+</html>
